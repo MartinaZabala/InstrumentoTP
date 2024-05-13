@@ -1,0 +1,52 @@
+/* Estilos CSS */
+.producto {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    padding-bottom: 8px;
+  }
+  
+  .producto:not(:last-child) {
+    border-bottom: 1px solid black; /* Agrega un borde inferior a cada producto excepto al último */
+  }
+  
+  .titulo {
+    font-size: x-large;
+  }
+  
+  .precio {
+    font-size: large;
+    font-weight: bold;
+  }
+  
+  .datos {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .imagen {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+  }
+  
+  .envio {
+    color: orange; /* Cambia el color a naranja para todos los envíos */
+  }
+  
+  .envio-gratis {
+    color: green; /* Cambia el color a verde para los envíos gratis */
+  }
+  
+  .categoria-container {
+    display: flex;
+    gap: 20px; /* Espacio entre el título y la categoría */
+    align-items: center; /* Alinea verticalmente los elementos */
+  }
+  
+  .titulo-categoria {
+    color: black;
+    font-weight: bold; /* Hace que el texto sea más grueso */
+  }
+  

@@ -1,0 +1,16 @@
+.catalogo{
+    display: flex;
+    flex-direction: column;
+    gap:16px;
+    
+}
+.producto {
+    display: flex;
+    justify-content: space-between; /* Esto coloca los elementos en los extremos */
+    align-items: center; /* Esto centra verticalmente los elementos */
+}
+
+.datos {
+    flex-grow: 1; /* Esto hace que la sección de datos ocupe todo el espacio disponible */
+    margin-right: 10px; /* Añade un pequeño margen a la derecha */
+}

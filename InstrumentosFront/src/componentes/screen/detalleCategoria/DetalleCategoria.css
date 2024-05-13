@@ -1,0 +1,23 @@
+.detalle-categoria-container {
+    text-align: center;
+  }
+  
+  .instrumentos-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .instrumentos-list li {
+    margin: 5px 0;
+    display: flex;
+    align-items: center;
+  }
+  
+  .instrumentos-list li::before {
+    content: "•";
+    margin-right: 5px;
+  }
+  
