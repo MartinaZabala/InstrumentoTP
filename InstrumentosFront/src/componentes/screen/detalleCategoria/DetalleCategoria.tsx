@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getAllCategorias, getAllInstrumentos } from "../../../servicios/FuncionesApi";
 import CategoriaInstrumento from "../../../entidades/CategoriaInstrumento";
 import Instrumento from "../../../entidades/Instrumento";
 import "./DetalleCategoria.css";
+import { getAllCategoria } from "../../../servicios/CategoriaService";
+import { getAllInstrumentos } from "../../../servicios/InstrumentoService";
 
 const DetalleCategoria = () => {
   const { id } = useParams<{ id?: string }>();
@@ -14,7 +15,7 @@ const DetalleCategoria = () => {
     const fetchData = async () => {
       try {
         if (id) {
-          const categoriasData = await getAllCategorias();
+          const categoriasData = await getAllCategoria();
           const categoriaData = categoriasData.find(c => c.id === parseInt(id, 10)) ?? null;
           setCategoria(categoriaData);
 

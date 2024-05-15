@@ -79,3 +79,16 @@
 .form-group {
   margin-bottom: 20px; /* Ajusta el margen inferior para aumentar el espacio entre elementos */
 }
+
+.BotonEModal{
+  background-color: rgb(231, 60, 55);
+  border: none;
+  margin-right: 10px; /* Ajusta el valor de acuerdo a tus necesidades */
+
+  
+}
+
+.BotonGModal{
+  background-color: rgb(148, 70, 155);
+  border: none;
+}

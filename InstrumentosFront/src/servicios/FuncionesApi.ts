@@ -1,4 +1,4 @@
-import Instrumento from "../entidades/Instrumento";
+/* import Instrumento from "../entidades/Instrumento";
 import CategoriaInstrumento from "../entidades/CategoriaInstrumento";
 
 export async function getAllInstrumentos(): Promise<Instrumento[]> {
@@ -90,3 +90,4 @@ export async function getAllCategorias(): Promise<CategoriaInstrumento[]> {
 
 
 
+ */

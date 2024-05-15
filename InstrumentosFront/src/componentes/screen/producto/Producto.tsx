@@ -3,6 +3,7 @@
 import { Link } from "react-router-dom";
 import CategoriaInstrumento from "../../../entidades/CategoriaInstrumento";
 import "./Producto.css"; // Importa el archivo de estilos CSS
+import { Button } from "react-bootstrap";
 
 type ProductoParams = {
   id: number;
@@ -51,6 +52,10 @@ export const Producto = (args: ProductoParams) => {
           </div>
         </div>
       </div>
+      
+      <Button className="BotonEliminar">Eliminar</Button>
+      <Button className="BotonEditar">Editar</Button>
     </div>
+    
   );
 };

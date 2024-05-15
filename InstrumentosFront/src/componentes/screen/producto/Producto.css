@@ -49,4 +49,14 @@
     color: black;
     font-weight: bold; /* Hace que el texto sea más grueso */
   }
-  
+  .BotonEliminar{
+    color: rgb(20, 20, 26);
+    background-color: rgb(206, 76, 76);
+    border: 0cap;
+  }
+
+  .BotonEditar{
+    color: black;
+    background-color: rgb(96, 98, 184);
+    border: 0cap;
+  }

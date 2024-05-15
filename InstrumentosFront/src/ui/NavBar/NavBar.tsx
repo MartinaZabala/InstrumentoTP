@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
+import Modal from "react-bootstrap/Modal";
 import CategoriaInstrumento from "../../entidades/CategoriaInstrumento";
-import { getAllCategorias, postInstrumentos } from "../../servicios/FuncionesApi";
-import "../NavBar/NavBar.css"
+import "../NavBar/NavBar.css";
+import { getAllCategoria } from "../../servicios/CategoriaService";
+import FormularioInstrumento from "./Modal/FormularioInstrumento";
+import { Button } from "react-bootstrap";
+import { saveInstrumento } from "../../servicios/InstrumentoService";
+import Instrumento from "../../entidades/Instrumento";
 
 const NavBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -12,23 +15,11 @@ const NavBar = () => {
   const [isOpcionesOpen, setIsOpcionesOpen] = useState(false);
   const [categorias, setCategorias] = useState<CategoriaInstrumento[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [nuevoInstrumento, setNuevoInstrumento] = useState({
-    id: 0,
-    instrumento: "",
-    marca: "",
-    modelo: "",
-    imagen: "",
-    precio: 0,
-    costoEnvio: "G",
-    cantidadVendida: 0,
-    descripcion: "",
-    categoriaInstrumento: null as CategoriaInstrumento | null
-  });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getAllCategorias();
+        const data = await getAllCategoria();
         setCategorias(data);
       } catch (error) {
         console.error("Error al obtener las categorías:", error);
@@ -64,46 +55,14 @@ const NavBar = () => {
     setIsModalOpen(false);
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setNuevoInstrumento((prevInstrumento) => ({
-      ...prevInstrumento,
-      [name]: value
-    }));
-  };
-
-  const handleCategoriaChange = (categoria: CategoriaInstrumento) => {
-    setNuevoInstrumento((prevInstrumento) => ({
-      ...prevInstrumento,
-      categoriaInstrumento: categoria
-    }));
-  };
-
-  const handleEnvioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setNuevoInstrumento((prevInstrumento) => ({
-      ...prevInstrumento,
-      [name]: parseFloat(value)
-    }));
-  };
-
-  const guardarInstrumento = async () => {
+  const guardarInstrumento = async (instrumento: Instrumento) => {
     try {
-      if (nuevoInstrumento.categoriaInstrumento) {
-        // Solo intenta guardar si categoriaInstrumento no es null
-        await postInstrumentos({
-          ...nuevoInstrumento,
-          categoriaInstrumento: nuevoInstrumento.categoriaInstrumento as CategoriaInstrumento // Asegura el tipo
-        });
-        closeModal();
-      } else {
-        console.error("No se puede guardar el instrumento sin una categoría válida.");
-      }
+      await saveInstrumento(instrumento);
+      closeModal();
     } catch (error) {
       console.error("Error al guardar el instrumento:", error);
     }
   };
-  
 
   return (
     <nav className="navbar">
@@ -116,7 +75,10 @@ const NavBar = () => {
           <ul className="menu-list">
             {categorias.map((categoria) => (
               <li key={categoria.id}>
-                <Link to={`/categoria/instrumentos/${categoria.id}`} className="dropdown-item">
+                <Link
+                  to={`/categoria/instrumentos/${categoria.id}`}
+                  className="dropdown-item"
+                >
                   {categoria.denominacion}
                 </Link>
               </li>
@@ -167,59 +129,27 @@ const NavBar = () => {
           <Modal.Title>Crear Instrumento</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <form>
-            <div className="form-group">
-              <label htmlFor="instrumento">Nombre:</label>
-              <input type="text" id="instrumento" name="instrumento" placeholder="Nombre" onChange={handleInputChange} />
-            </div>
-            <div className="form-group">
-              <label htmlFor="marca">Marca:</label>
-              <input type="text" id="marca" name="marca" placeholder="Marca" onChange={handleInputChange} />
-            </div>
-            <div className="form-group">
-              <label htmlFor="modelo">Modelo:</label>
-              <input type="text" id="modelo" name="modelo" placeholder="Modelo" onChange={handleInputChange} />
-            </div>
-            <div className="form-group">
-              <label htmlFor="imagen">Imagen URL:</label>
-              <input type="text" id="imagen" name="imagen" placeholder="Imagen URL" onChange={handleInputChange} />
-            </div>
-            <div className="form-group">
-              <label htmlFor="precio">Precio:</label>
-              <input type="number" id="precio" name="precio" placeholder="Precio" onChange={handleInputChange} />
-            </div>
-            <div className="form-group">
-              <label htmlFor="costoEnvio">Costo de Envío:</label>
-              <select id="costoEnvio" name="costoEnvio" onChange={handleInputChange}>
-                <option value="G">Gratuito</option>
-                <option value="C">Con Cargo</option>
-              </select>
-            </div>
-            {nuevoInstrumento.costoEnvio === 'C' && (
-              <div className="form-group">
-                <label htmlFor="montoEnvio">Monto del Envío:</label>
-                <input type="number" id="montoEnvio" name="montoEnvio" placeholder="Monto del Envío" onChange={handleEnvioChange} />
-              </div>
-            )}
-            <div className="form-group">
-              <label htmlFor="descripcion">Descripción:</label>
-              <textarea id="descripcion" name="descripcion" placeholder="Descripción" onChange={handleInputChange} />
-            </div>
-            <div className="form-group">
-              <label htmlFor="categoriaInstrumento">Categoría:</label>
-              <select id="categoriaInstrumento" name="categoriaInstrumento" onChange={(e) => handleCategoriaChange(categorias[parseInt(e.target.value)])}>
-                <option value="">Seleccione una categoría</option>
-                {categorias.map((categoria, index) => (
-                  <option key={categoria.id} value={index}>{categoria.denominacion}</option>
-                ))}
-              </select>
-            </div>
-          </form>
+          <FormularioInstrumento
+            closeModal={closeModal}
+            categorias={categorias}
+            onSave={guardarInstrumento as (instrumento: Instrumento) => void}
+          />
+
+          <Button
+            variant="secondary"
+            onClick={closeModal}
+            className="BotonEModal"
+          >
+            Eliminar
+          </Button>
+          <Button
+            variant="primary"
+            onClick={() => guardarInstrumento(nuevoInstrumento)} // Aquí envolvemos la llamada a guardarInstrumento en una función anónima
+            className="BotonGModal"
+          >
+            Guardar
+          </Button>
         </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={closeModal}>Cerrar</Button>
-          <Button variant="primary" onClick={guardarInstrumento}>Guardar</Button>
-        </Modal.Footer>
       </Modal>
     </nav>
   );

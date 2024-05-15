@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { getAllInstrumentos } from "../../../servicios/FuncionesApi";
 import "./catalogo.css";
 import Instrumento from "../../../entidades/Instrumento";
 import { Producto } from "../producto/Producto";
+import { getAllInstrumentos } from "../../../servicios/InstrumentoService";
 
 export const Catalogo = () => {
   const [productos, setProductos] = useState<Instrumento[]>([]);
@@ -10,8 +10,8 @@ export const Catalogo = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getAllInstrumentos();
-        setProductos(data);
+        const data = await getAllInstrumentos();  // getAllInstrumentos devuelve solo los datos
+        setProductos(data);  // Establece el estado con los datos recibidos
       } catch (error) {
         console.error("Error al obtener los instrumentos:", error);
       }

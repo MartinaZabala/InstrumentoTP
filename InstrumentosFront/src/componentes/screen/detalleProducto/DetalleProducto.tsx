@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom"
 import './DetalleProducto.css';
 import Instrumento from "../../../entidades/Instrumento";
-import { getInstrumentoById } from "../../../servicios/FuncionesApi";
+import { getInstrumentoById } from "../../../servicios/InstrumentoService";
 
 const DetalleInstrumentos = () => {
   const { id } = useParams<{ id?: string }>();
