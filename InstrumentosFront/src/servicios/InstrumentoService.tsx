@@ -1,5 +1,5 @@
 import axios from "axios";
-import Instrumento from "../entidades/Instrumento";
+import { Instrumento } from "../entidades/Instrumento";
 
 const urlBase = "http://localhost:8081/api/instrumento";
 

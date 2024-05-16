@@ -1,10 +1,8 @@
-// Componente Producto
-
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import CategoriaInstrumento from "../../../entidades/CategoriaInstrumento";
 import "./Producto.css"; // Importa el archivo de estilos CSS
-import { Button } from "react-bootstrap";
-
+import { Button, Modal } from "react-bootstrap";
+import { deleteInstrumento } from "../../../servicios/InstrumentoService";
 type ProductoParams = {
   id: number;
   imagen: string;
@@ -24,6 +22,20 @@ const determinarEnvio = (costoEnvio: string) => {
 };
 
 export const Producto = (args: ProductoParams) => {
+  const [showModal, setShowModal] = useState(false);
+
+  const handleDelete = async () => {
+    try {
+      await deleteInstrumento(args.id);
+      window.location.reload();
+      setShowModal(false);
+      // Aquí puedes agregar lógica adicional después de eliminar el instrumento, como recargar la lista de productos
+    } catch (error) {
+      console.error("Error al eliminar el instrumento:", error);
+      // Aquí puedes manejar errores relacionados con la eliminación del instrumento
+    }
+  };
+
   return (
     <div className="producto">
       <img
@@ -37,11 +49,15 @@ export const Producto = (args: ProductoParams) => {
         </Link>
         <div className="precio">$ {args.precio}</div>
         <div className="envio">
-  <p className={`mt-4 card-text ${args.costoEnvio === 'G' ? 'envio-gratis' : 'envio-costo'}`}>
-    {determinarEnvio(args.costoEnvio)}
-  </p>
-</div>
-        
+          <p
+            className={`mt-4 card-text ${
+              args.costoEnvio === "G" ? "envio-gratis" : "envio-costo"
+            }`}
+          >
+            {determinarEnvio(args.costoEnvio)}
+          </p>
+        </div>
+
         <div>{args.cantidadVendida} vendidos</div>
         <div className="categoria-container">
           <div>
@@ -52,10 +68,29 @@ export const Producto = (args: ProductoParams) => {
           </div>
         </div>
       </div>
-      
-      <Button className="BotonEliminar">Eliminar</Button>
+
+      <Button className="BotonEliminar" onClick={() => setShowModal(true)}>
+        Eliminar
+      </Button>
       <Button className="BotonEditar">Editar</Button>
+
+      {/* Modal de confirmación para eliminar */}
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirmar Eliminación</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          ¿Estás seguro de que deseas eliminar el instrumento?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Cancelar
+          </Button>
+          <Button variant="primary" onClick={handleDelete}>
+            Eliminar
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
-    
   );
 };

@@ -1,5 +1,4 @@
 import axios from "axios";
-import CategoriaInstrumento from "../entidades/CategoriaInstrumento";
 
 const urlBase = "http://localhost:8081/api/instrumentoCategoria";
 
@@ -45,8 +44,7 @@ export async function updateCategoria(categoriaInstrumento: CategoriaInstrumento
 
 export async function deleteCategoria(id: number): Promise<void> {
   try {
-    const response = await axios.delete<void>(`${urlBase}/${id}`);
-    return response.data;
+    await axios.delete<void>(`${urlBase}/${id}`);
   } catch (error) {
     console.error(`Error deleting category with id ${id}:`, error);
     throw error;

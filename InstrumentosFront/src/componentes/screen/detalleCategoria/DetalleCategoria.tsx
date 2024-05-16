@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import CategoriaInstrumento from "../../../entidades/CategoriaInstrumento";
-import Instrumento from "../../../entidades/Instrumento";
 import "./DetalleCategoria.css";
 import { getAllCategoria } from "../../../servicios/CategoriaService";
 import { getAllInstrumentos } from "../../../servicios/InstrumentoService";
+import { Instrumento } from "../../../entidades/Instrumento";
 
 const DetalleCategoria = () => {
   const { id } = useParams<{ id?: string }>();

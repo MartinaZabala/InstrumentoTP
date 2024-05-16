@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Modal from "react-bootstrap/Modal";
-import CategoriaInstrumento from "../../entidades/CategoriaInstrumento";
 import "../NavBar/NavBar.css";
 import { getAllCategoria } from "../../servicios/CategoriaService";
-import FormularioInstrumento from "./Modal/FormularioInstrumento";
-import { Button } from "react-bootstrap";
 import { saveInstrumento } from "../../servicios/InstrumentoService";
-import Instrumento from "../../entidades/Instrumento";
+import { Instrumento } from "../../entidades/Instrumento";
+import FormularioInstrumento from "./Modal/FormularioInstrumento";
 
 const NavBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -15,6 +13,7 @@ const NavBar = () => {
   const [isOpcionesOpen, setIsOpcionesOpen] = useState(false);
   const [categorias, setCategorias] = useState<CategoriaInstrumento[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [nuevoInstrumento] = useState<Instrumento | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -55,12 +54,19 @@ const NavBar = () => {
     setIsModalOpen(false);
   };
 
-  const guardarInstrumento = async (instrumento: Instrumento) => {
-    try {
-      await saveInstrumento(instrumento);
-      closeModal();
-    } catch (error) {
-      console.error("Error al guardar el instrumento:", error);
+  const guardarInstrumento = async () => {
+    if (nuevoInstrumento) {
+      try {
+        if (nuevoInstrumento.categoriaInstrumento) {
+          await saveInstrumento(nuevoInstrumento);
+          closeModal();
+          window.location.reload(); // Recarga la página después de guardar
+        } else {
+          console.error("No se puede guardar el instrumento sin una categoría válida.");
+        }
+      } catch (error) {
+        console.error("Error al guardar el instrumento:", error);
+      }
     }
   };
 
@@ -75,10 +81,7 @@ const NavBar = () => {
           <ul className="menu-list">
             {categorias.map((categoria) => (
               <li key={categoria.id}>
-                <Link
-                  to={`/categoria/instrumentos/${categoria.id}`}
-                  className="dropdown-item"
-                >
+                <Link to={`/categoria/instrumentos/${categoria.id}`} className="dropdown-item">
                   {categoria.denominacion}
                 </Link>
               </li>
@@ -125,32 +128,16 @@ const NavBar = () => {
         )}
       </div>
       <Modal show={isModalOpen} onHide={closeModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Crear Instrumento</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <FormularioInstrumento
-            closeModal={closeModal}
-            categorias={categorias}
-            onSave={guardarInstrumento as (instrumento: Instrumento) => void}
-          />
+  <Modal.Header closeButton>
+    <Modal.Title>Crear Instrumento</Modal.Title>
+  </Modal.Header>
+  <FormularioInstrumento
+    closeModal={closeModal}
+    categorias={categorias}
+    guardarInstrumento={guardarInstrumento}
+  />
+</Modal>
 
-          <Button
-            variant="secondary"
-            onClick={closeModal}
-            className="BotonEModal"
-          >
-            Eliminar
-          </Button>
-          <Button
-            variant="primary"
-            onClick={() => guardarInstrumento(nuevoInstrumento)} // Aquí envolvemos la llamada a guardarInstrumento en una función anónima
-            className="BotonGModal"
-          >
-            Guardar
-          </Button>
-        </Modal.Body>
-      </Modal>
     </nav>
   );
 };

@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
-import CategoriaInstrumento from "../../../entidades/CategoriaInstrumento";
 import { getAllCategoria } from "../../../servicios/CategoriaService";
-import Instrumento from "../../../entidades/Instrumento";
+import { saveInstrumento } from "../../../servicios/InstrumentoService";
+import { Button } from "react-bootstrap";
 
 interface FormularioInstrumentoProps {
   closeModal: () => void;
-  categorias: CategoriaInstrumento[]; // Agrega la propiedad categorias a la interfaz
-  onSave: (instrumento: Instrumento) => void;
+  categorias: CategoriaInstrumento[];
+  guardarInstrumento: () => Promise<void>;
 }
 
-const FormularioInstrumento: React.FC<FormularioInstrumentoProps> = ({ closeModal }) => {
+const FormularioInstrumento: React.FC<FormularioInstrumentoProps> = ({
+  closeModal,
+}) => {
   const [categorias, setCategorias] = useState<CategoriaInstrumento[]>([]);
   const [nuevoInstrumento, setNuevoInstrumento] = useState({
     id: 0,
@@ -21,7 +23,11 @@ const FormularioInstrumento: React.FC<FormularioInstrumentoProps> = ({ closeModa
     costoEnvio: "G",
     cantidadVendida: 0,
     descripcion: "",
-    categoriaInstrumento: null as CategoriaInstrumento | null,
+    categoriaInstrumento: {
+      id: 0,
+      denominacion: "",
+    },
+    montoEnvio: 0
   });
 
   useEffect(() => {
@@ -37,7 +43,11 @@ const FormularioInstrumento: React.FC<FormularioInstrumentoProps> = ({ closeModa
     fetchData();
   }, []);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     const { name, value } = e.target;
     setNuevoInstrumento((prevInstrumento) => ({
       ...prevInstrumento,
@@ -57,20 +67,36 @@ const FormularioInstrumento: React.FC<FormularioInstrumentoProps> = ({ closeModa
     setNuevoInstrumento((prevInstrumento) => ({
       ...prevInstrumento,
       costoEnvio: value,
-      montoEnvio: value === "G" ? 0 : null,
+      montoEnvio: value === "G" ? 0 : 0,
     }));
   };
 
   const handleMontoEnvioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
-    setNuevoInstrumento(prevInstrumento => ({
+    setNuevoInstrumento((prevInstrumento) => ({
       ...prevInstrumento,
-      montoEnvio: value
+      montoEnvio: parseInt(value) || 0, // Asegurar que montoEnvio sea un número o 0 si es inválido
     }));
   };
 
+  const guardarInstrumento = async () => {
+    try {
+      if (nuevoInstrumento.categoriaInstrumento) {
+        await saveInstrumento(nuevoInstrumento);
+        closeModal();
+        window.location.reload();
+      } else {
+        console.error(
+          "No se puede guardar el instrumento sin una categoría válida."
+        );
+      }
+    } catch (error) {
+      console.error("Error al guardar el instrumento:", error);
+    }
+  };
+
   return (
-    <form>
+    <form className="formulario-container">
       <div className="form-group">
         <label htmlFor="instrumento">Nombre:</label>
         <input
@@ -147,7 +173,7 @@ const FormularioInstrumento: React.FC<FormularioInstrumentoProps> = ({ closeModa
             id="montoEnvio"
             name="montoEnvio"
             placeholder="Monto del Envío"
-            value={nuevoInstrumento.costoEnvio || ""}
+            value={nuevoInstrumento.montoEnvio || ""}
             onChange={handleMontoEnvioChange}
           />
         </div>
@@ -168,7 +194,9 @@ const FormularioInstrumento: React.FC<FormularioInstrumentoProps> = ({ closeModa
         <select
           id="categoriaInstrumento"
           name="categoriaInstrumento"
-          onChange={(e) => handleCategoriaChange(categorias[parseInt(e.target.value)])}
+          onChange={(e) =>
+            handleCategoriaChange(categorias[parseInt(e.target.value)])
+          }
         >
           <option value="">Seleccione una categoría</option>
           {categorias.map((categoria, index) => (
@@ -177,6 +205,18 @@ const FormularioInstrumento: React.FC<FormularioInstrumentoProps> = ({ closeModa
             </option>
           ))}
         </select>
+      </div>
+      <div className="form-group">
+        <Button variant="secondary" onClick={closeModal}>
+          Cancelar
+        </Button>
+        <Button
+          variant="primary"
+          onClick={guardarInstrumento}
+          className="BotonGModal"
+        >
+          Guardar
+        </Button>
       </div>
     </form>
   );
