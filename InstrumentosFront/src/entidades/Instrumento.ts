@@ -1,3 +1,5 @@
+import { ChangeEventHandler } from "react";
+import { CategoriaInstrumento } from "./CategoriaInstrumento";
 
 
 export interface Instrumento {
@@ -10,5 +12,7 @@ export interface Instrumento {
   costoEnvio: string;
   cantidadVendida: number;
   descripcion: string;
+  cantidad: number;
+  addCarrito?:ChangeEventHandler;
   categoriaInstrumento: CategoriaInstrumento;
 }

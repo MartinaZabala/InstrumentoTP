@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import "./catalogo.css";
-import Instrumento from "../../../entidades/Instrumento";
-import { Producto } from "../producto/Producto";
 import { getAllInstrumentos } from "../../../servicios/InstrumentoService";
+import { Instrumento } from "../../../entidades/Instrumento";
+import Producto from "../producto/Producto";
+import { ProductoParams } from "../carrito/carrito";
 
 export const Catalogo = () => {
   const [productos, setProductos] = useState<Instrumento[]>([]);
@@ -19,6 +20,11 @@ export const Catalogo = () => {
 
     fetchData();
   }, []);
+  const handleGuardarCarrito = (items: ProductoParams[]) => {
+    // Implementa la lógica para guardar los elementos en el carrito aquí
+    console.log("Elementos guardados en el carrito:", items);
+  };
+
 
   return (
     <div className="catalogo">
@@ -32,7 +38,8 @@ export const Catalogo = () => {
           cantidadVendida={producto.cantidadVendida}
           id={producto.id}
           categoria={producto.categoriaInstrumento} // Pasar la categoría como parte de los parámetros
-        />
+          cantidad={0} onGuardarCarrito={function (items: ProductoParams[]): void {
+          } }        />
       ))}
     </div>
   );

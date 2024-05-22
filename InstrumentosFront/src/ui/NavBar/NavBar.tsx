@@ -5,7 +5,8 @@ import "../NavBar/NavBar.css";
 import { getAllCategoria } from "../../servicios/CategoriaService";
 import { saveInstrumento } from "../../servicios/InstrumentoService";
 import { Instrumento } from "../../entidades/Instrumento";
-import FormularioInstrumento from "./Modal/FormularioInstrumento";
+import FormularioInstrumento from "./Modal/Form/FormularioInstrumento";
+import { CategoriaInstrumento } from "../../entidades/CategoriaInstrumento";
 
 const NavBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -62,7 +63,9 @@ const NavBar = () => {
           closeModal();
           window.location.reload(); // Recarga la página después de guardar
         } else {
-          console.error("No se puede guardar el instrumento sin una categoría válida.");
+          console.error(
+            "No se puede guardar el instrumento sin una categoría válida."
+          );
         }
       } catch (error) {
         console.error("Error al guardar el instrumento:", error);
@@ -81,7 +84,10 @@ const NavBar = () => {
           <ul className="menu-list">
             {categorias.map((categoria) => (
               <li key={categoria.id}>
-                <Link to={`/categoria/instrumentos/${categoria.id}`} className="dropdown-item">
+                <Link
+                  to={`/categoria/instrumentos/${categoria.id}`}
+                  className="dropdown-item"
+                >
                   {categoria.denominacion}
                 </Link>
               </li>
@@ -124,20 +130,24 @@ const NavBar = () => {
                 Crear
               </button>
             </li>
+            <li>
+              <Link to="/DetalleCarrito" className="dropdown-item">
+                Detalle Carrito
+              </Link>
+            </li>
           </ul>
         )}
       </div>
       <Modal show={isModalOpen} onHide={closeModal}>
-  <Modal.Header closeButton>
-    <Modal.Title>Crear Instrumento</Modal.Title>
-  </Modal.Header>
-  <FormularioInstrumento
-    closeModal={closeModal}
-    categorias={categorias}
-    guardarInstrumento={guardarInstrumento}
-  />
-</Modal>
-
+        <Modal.Header closeButton>
+          <Modal.Title>Crear Instrumento</Modal.Title>
+        </Modal.Header>
+        <FormularioInstrumento
+          closeModal={closeModal}
+          categorias={categorias}
+          guardarInstrumento={guardarInstrumento}
+        />
+      </Modal>
     </nav>
   );
 };

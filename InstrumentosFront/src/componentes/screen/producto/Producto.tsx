@@ -1,9 +1,12 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import "./Producto.css"; // Importa el archivo de estilos CSS
+import React, { useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { deleteInstrumento } from "../../../servicios/InstrumentoService";
-type ProductoParams = {
+import { CategoriaInstrumento } from "../../../entidades/CategoriaInstrumento";
+import FormularioEditarInst from "../../../ui/NavBar/Modal/FormEditar/FormularioEditarInst";
+import Carrito, { ProductoParams as CarritoProductoParams } from "../carrito/carrito";
+import "./Producto.css"
+
+export type ProductoParams = {
   id: number;
   imagen: string;
   instrumento: string;
@@ -11,6 +14,8 @@ type ProductoParams = {
   costoEnvio: string;
   cantidadVendida: number;
   categoria: CategoriaInstrumento | null;
+  cantidad: number; // Agregar la propiedad cantidad
+  onGuardarCarrito: (items: CarritoProductoParams[]) => void;
 };
 
 const determinarEnvio = (costoEnvio: string) => {
@@ -21,67 +26,56 @@ const determinarEnvio = (costoEnvio: string) => {
   }
 };
 
-export const Producto = (args: ProductoParams) => {
+const Producto = (args: ProductoParams) => {
   const [showModal, setShowModal] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
 
   const handleDelete = async () => {
     try {
       await deleteInstrumento(args.id);
-      window.location.reload();
       setShowModal(false);
-      // Aquí puedes agregar lógica adicional después de eliminar el instrumento, como recargar la lista de productos
     } catch (error) {
       console.error("Error al eliminar el instrumento:", error);
-      // Aquí puedes manejar errores relacionados con la eliminación del instrumento
     }
+  };
+
+  const handleCloseEditForm = () => setShowEditForm(false);
+
+  const handleGuardarCarrito = () => {
+    args.onGuardarCarrito([{ ...args, cantidad: 1 }]);
   };
 
   return (
     <div className="producto">
-      <img
-        className="imagen"
-        src={"/img/" + args.imagen}
-        alt="imagen del producto"
-      />
+      <img className="imagen" src={"/img/" + args.imagen} alt="imagen del producto" />
       <div className="datos">
-        <Link to={`/DetalleProducto/${args.id}`}>
-          <div className="titulo">{args.instrumento}</div>
-        </Link>
+        <div className="titulo">{args.instrumento}</div>
         <div className="precio">$ {args.precio}</div>
         <div className="envio">
-          <p
-            className={`mt-4 card-text ${
-              args.costoEnvio === "G" ? "envio-gratis" : "envio-costo"
-            }`}
-          >
+          <p className={`mt-4 card-text ${args.costoEnvio === "G" ? "envio-gratis" : "envio-costo"}`}>
             {determinarEnvio(args.costoEnvio)}
           </p>
         </div>
-
         <div>{args.cantidadVendida} vendidos</div>
         <div className="categoria-container">
           <div>
             <p className="titulo-categoria">Categoría:</p>
-            <div className="categoria">
-              {args.categoria ? args.categoria.denominacion : "Cargando..."}
-            </div>
+            <div className="categoria">{args.categoria ? args.categoria.denominacion : "Cargando..."}</div>
           </div>
         </div>
       </div>
-
       <Button className="BotonEliminar" onClick={() => setShowModal(true)}>
         Eliminar
       </Button>
-      <Button className="BotonEditar">Editar</Button>
-
-      {/* Modal de confirmación para eliminar */}
+      <Button className="BotonEditar" onClick={() => setShowEditForm(true)}>
+        Editar
+      </Button>
+      
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Confirmar Eliminación</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-          ¿Estás seguro de que deseas eliminar el instrumento?
-        </Modal.Body>
+        <Modal.Body>¿Estás seguro de que deseas eliminar el instrumento?</Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowModal(false)}>
             Cancelar
@@ -91,6 +85,17 @@ export const Producto = (args: ProductoParams) => {
           </Button>
         </Modal.Footer>
       </Modal>
+      <Modal show={showEditForm} onHide={handleCloseEditForm}>
+        <Modal.Header closeButton>
+          <Modal.Title>Editar Instrumento</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <FormularioEditarInst closeModal={handleCloseEditForm} instrumento={args} categorias={[]} />
+        </Modal.Body>
+      </Modal>
+      <Carrito instrumentos={[args]} onGuardarCarrito={handleGuardarCarrito} />
     </div>
   );
 };
+
+export default Producto;

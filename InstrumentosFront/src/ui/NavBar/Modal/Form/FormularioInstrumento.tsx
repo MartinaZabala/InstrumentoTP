@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { getAllCategoria } from "../../../servicios/CategoriaService";
-import { saveInstrumento } from "../../../servicios/InstrumentoService";
+import { getAllCategoria } from "../../../../servicios/CategoriaService";
+import { saveInstrumento } from "../../../../servicios/InstrumentoService";
 import { Button } from "react-bootstrap";
+import { CategoriaInstrumento } from "../../../../entidades/CategoriaInstrumento";
 
 interface FormularioInstrumentoProps {
   closeModal: () => void;
@@ -27,7 +28,7 @@ const FormularioInstrumento: React.FC<FormularioInstrumentoProps> = ({
       id: 0,
       denominacion: "",
     },
-    montoEnvio: 0
+    montoEnvio: ""
   });
 
   useEffect(() => {
@@ -64,20 +65,28 @@ const FormularioInstrumento: React.FC<FormularioInstrumentoProps> = ({
 
   const handleCostoEnvioChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { value } = e.target;
+
     setNuevoInstrumento((prevInstrumento) => ({
       ...prevInstrumento,
       costoEnvio: value,
-      montoEnvio: value === "G" ? 0 : 0,
+      montoEnvio: value === "G" ? "" : prevInstrumento.montoEnvio || "0", 
     }));
-  };
+};
+
 
   const handleMontoEnvioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
+  const { value } = e.target;
+  console.log("Valor ingresado:", value); // Agregamos esta línea para verificar el valor ingresado
+  const parsedValue = parseInt(value.trim());
+  if (!isNaN(parsedValue)) {
     setNuevoInstrumento((prevInstrumento) => ({
       ...prevInstrumento,
-      montoEnvio: parseInt(value) || 0, // Asegurar que montoEnvio sea un número o 0 si es inválido
+      montoEnvio: parsedValue.toString(),
     }));
-  };
+  }
+};
+
+  
 
   const guardarInstrumento = async () => {
     try {
@@ -178,7 +187,6 @@ const FormularioInstrumento: React.FC<FormularioInstrumentoProps> = ({
           />
         </div>
       )}
-
       <div className="form-group">
         <label htmlFor="descripcion">Descripción:</label>
         <textarea

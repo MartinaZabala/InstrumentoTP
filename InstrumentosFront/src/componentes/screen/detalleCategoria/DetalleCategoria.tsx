@@ -4,6 +4,7 @@ import "./DetalleCategoria.css";
 import { getAllCategoria } from "../../../servicios/CategoriaService";
 import { getAllInstrumentos } from "../../../servicios/InstrumentoService";
 import { Instrumento } from "../../../entidades/Instrumento";
+import { CategoriaInstrumento } from "../../../entidades/CategoriaInstrumento";
 
 const DetalleCategoria = () => {
   const { id } = useParams<{ id?: string }>();
